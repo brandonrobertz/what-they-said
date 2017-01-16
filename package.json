@@ -1,0 +1,14 @@
+{
+  "name": "trump_says_frontend",
+  "version": "1.0.0",
+  "description": "An interactive tool for searching Trump speeches",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "brandon roberts",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "dependencies": {
+    "subtitles-parser": "0.0.2"
+  }
+}
