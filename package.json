@@ -10,9 +10,11 @@
   "license": "SEE LICENSE IN LICENSE.md",
   "dependencies": {
     "lodash": "^4.17.4",
-    "subtitles-parser": "0.0.2"
+    "lunr": "^0.7.2"
   },
   "devDependencies": {
-    "browserify": "^14.0.0"
+    "browserify": "^14.0.0",
+    "subtitles-parser": "0.0.2",
+    "lodash": "^4.17.4"
   }
 }
