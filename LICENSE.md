@@ -1,1 +1,1 @@
-(C) Copyright 2017 Brandon Roberts
+Copyright 2017 Brandon Roberts. All rights reserved.
