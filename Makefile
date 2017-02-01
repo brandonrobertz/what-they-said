@@ -1,16 +1,21 @@
-INITIAL_FMT=vtt
+# subtitle format they get pulled in from youtube-dl
+IN_FMT=vtt
+# final output conversion format
 OUT_FMT=srt
-DL_CMD=cd ${SUBFMT} && youtube-dl -i --yes-playlist --write-auto-sub --write-sub --sub-lang en --skip-download
+DL_CMD=cd ${OUT_FMT} && youtube-dl -i --yes-playlist --write-auto-sub --write-sub --sub-lang en --skip-download
+BROWSERIFY=./node_modules/browserify/bin/cmd.js
 
-default: dir download
+default: dir download convert index bundle
 
 dir:
-	mkdir -p ${INITIAL_FMT}
+	mkdir -p ${IN_FMT}
 	rm -rf ${OUT_FMT}
 	mkdir -p ${OUT_FMT}
 
-download:
-	# youtube-dl outputs all kinds of error codes, which stop the makefile from continuing
+download: dir
+	# youtube-dl outputs all kinds of error codes, even when it does what it should
+	# this causes the Makrfile from continuing to the next command, so we have to force
+	# exit code zero ...
 	# right side broadcasting
 	${DL_CMD} https://www.youtube.com/playlist?list=PLuXXbBFpPc0lb4_FdI1NOPTCAYroXOywl || exit 0
 	# donald trump speeches and rallies
@@ -20,6 +25,21 @@ download:
 	# RBC NETWORK BROADCASTING - Donald Trump Speeches & Events
 	${DL_CMD} https://www.youtube.com/playlist?list=PLocvq02h-FETPLh3YW5TK5QNbAYkmLKKG || exit 0
 
-convert: dir
-	find ${INITIAL_FMT}/ -name '*.vtt' -exec ffmpeg -n -i '{}' '{}.${OUT_FMT}' \;
-	mv ${INITIAL_FMT}/*.${OUT_FMT} ${OUT_FMT}/
+convert: dir download
+	find ${IN_FMT}/ -name '*.vtt' -exec ffmpeg -n -i '{}' '{}.${OUT_FMT}' \;
+	mv ${IN_FMT}/*.${OUT_FMT} ${OUT_FMT}/
+	find ./${OUT_FMT}/ -iname '*full*' -exec ./bin/extract.js {} ${LIST_DIR} \;
+
+index: convert
+	./bin/extract.js ./${OUT_FMT}  searchIndex.json
+
+bundle: index
+	mkdir -p dist
+	echo -n 'window.DATA=' > dist/searchIndex.js
+	cat searchIndex.json >> dist/searchIndex.json
+	${BROWSERIFY} -o ./dist/bundle.js -e ./lib/index.js -d
+
+clean:
+	rm -rf ${OUT_FMT}
+	rm -rf ${IN_FMT}
+	rm -rf dist

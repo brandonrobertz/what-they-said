@@ -1,4 +1,10 @@
 *.swp
+*.swn
+*.swo
+*~
 node_modules/
 srt/
 vtt/
+*.raw
+dist/
+lib/searchIndex.json.js
