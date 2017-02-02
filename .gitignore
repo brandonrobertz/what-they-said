@@ -8,3 +8,5 @@ vtt/
 *.raw
 dist/
 lib/searchIndex.json.js
+searchIndex.json
+searchIndex.json.videoIds

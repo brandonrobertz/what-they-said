@@ -10,7 +10,7 @@
   "license": "SEE LICENSE IN LICENSE.md",
   "dependencies": {
     "lodash": "^4.17.4",
-    "lunr": "^0.7.2"
+    "lunr": "git+https://github.com/kig/lunr.js"
   },
   "devDependencies": {
     "browserify": "^14.0.0",
