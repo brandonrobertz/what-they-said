@@ -77,7 +77,7 @@ function processFile(filename) {
     var subset = data[i];
     var startTime = hmsToSeconds(subset.startTime);
     index.add({
-      id: `${videoId}-${startTime}`,
+      id: `${videoIx}-${startTime}`,
       startTime: startTime,
       text: subset.text
     });
@@ -86,8 +86,16 @@ function processFile(filename) {
   console.log('Processing complete!');
 }
 
+function orderBySize(path, a, b) {
+  var sizeA = fs.statSync(`${path}/${a}`)["size"];
+  var sizeB = fs.statSync(`${path}/${b}`)["size"];
+  return sizeB - sizeA;
+}
+
 var filenames = fs.readdirSync( indir);
-_.forEach(filenames, processFile);
+// order by size so that the larger files, with more lines
+// get the smaller indices in our videoIds index
+_.forEach(filenames.sort(orderBySize.bind(this, indir)), processFile);
 
 console.log('saving index to', outfile);
 fs.writeFileSync( outfile, JSON.stringify(index.toPackedJSON()));
