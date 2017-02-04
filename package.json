@@ -15,11 +15,13 @@
     "lodash": "^4.17.4",
     "lunr": "git+https://github.com/kig/lunr.js",
     "react": "^15.4.2",
+    "react-dom": "^15.4.2",
     "youtube-api": "^2.0.6"
   },
   "devDependencies": {
     "browserify": "^14.0.0",
-    "subtitles-parser": "0.0.2",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "reactify": "^1.1.1",
+    "subtitles-parser": "0.0.2"
   }
 }

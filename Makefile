@@ -48,7 +48,7 @@ metadata:
 
 bundle:
 	mkdir -p dist
-	${BROWSERIFY} -o ./dist/bundle.js -e ./lib/index.js -d
+	${BROWSERIFY} -o ./dist/bundle.js -t reactify -e ./lib/App.js -d
 
 clean:
 	rm -rf ${OUT_FMT}
