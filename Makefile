@@ -5,7 +5,7 @@ OUT_FMT=srt
 DL_CMD=cd ${IN_DIR} && youtube-dl -i --write-thumbnail --yes-playlist --write-auto-sub --write-sub --sub-lang en --skip-download
 BROWSERIFY=./node_modules/browserify/bin/cmd.js
 
-default: dir download convert index bundle
+default: index data metadata bundle
 
 dir:
 	mkdir -p ${IN_DIR}
@@ -31,22 +31,24 @@ convert:
 	#find ./${OUT_FMT}/ -iname '*full*' -exec ./bin/extract.js {} ${LIST_DIR} \;
 
 index:
+	rm searchIndex.json
+	rm searchIndex.json.videoIds
 	./bin/extract.js ./${OUT_FMT}  searchIndex.json
 
-data:
+data: index
 	echo -n 'window.DATA=' > dist/searchIndex.js
 	cat searchIndex.json >> dist/searchIndex.js
 	echo -n 'window.VIDS =' > dist/videoIds.js
 	cat searchIndex.json.videoIds >> dist/videoIds.js
 
-bundle:
-	mkdir -p dist
-	${BROWSERIFY} -o ./dist/bundle.js -e ./lib/index.js -d
-
 metadata:
 	mkdir -p dist/metadata
 	ls ./dist/metadata
 	./bin/metadata.js ./download ./dist/metadata
+
+bundle:
+	mkdir -p dist
+	${BROWSERIFY} -o ./dist/bundle.js -e ./lib/index.js -d
 
 clean:
 	rm -rf ${OUT_FMT}

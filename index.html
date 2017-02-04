@@ -15,9 +15,10 @@
   <body>
     <div id="loading">loading...</div>
     <div id="videoContainer"></div>
-    <!--<iframe id="videoContainer" width="640" height="360" src="" frameborder="0" allowfullscreen></iframe>-->
-    <input id="search" placeholder="Did Trump say it?" />
-    <input id="submit" type="button" value="Search" />
+    <form style="display: none" id="searchForm" action="#">
+        <input id="search" placeholder="Did Trump say it?" />
+        <input id="submit" type="submit" value="Search" />
+    </form>
     <div id="results">
     </div>
     <script src="dist/searchIndex.js"></script>

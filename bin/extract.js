@@ -62,7 +62,10 @@ function hmsToSeconds(str) {
   var h = Number.parseInt(splitted[0]);
   var m = Number.parseInt(splitted[1]);
   var s = Number.parseInt(splitted[2]);
-  return (h * 60 * 60) + (m * 60) + s;
+  // remove a second to give the viewer a little time to
+  // follow the video, as occasionally the offset gets set
+  // directly to where the word starts and it's easily missed
+  return ((h * 60 * 60) + (m * 60) + s) - 1;
 }
 
 function processFile(filename) {
