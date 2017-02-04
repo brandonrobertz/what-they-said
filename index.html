@@ -5,11 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>What did Trump say?</title>
     <style>
+      img {
+        width: 50px;
+        height: 38px;
+        margin: 2px;
+      }
     </style>
   </head>
   <body>
-  <script src="dist/searchIndex.js"></script>
-  <script src="dist/bundle.js"></script>
+    <div id="loading">loading...</div>
+    <div id="videoContainer"></div>
+    <!--<iframe id="videoContainer" width="640" height="360" src="" frameborder="0" allowfullscreen></iframe>-->
+    <input id="search" placeholder="Did Trump say it?" />
+    <input id="submit" type="button" value="Search" />
+    <div id="results">
+    </div>
+    <script src="dist/searchIndex.js"></script>
+    <script src="dist/videoIds.js"></script>
+    <script src="dist/bundle.js"></script>
   </body>
 </html>
 

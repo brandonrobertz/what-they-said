@@ -1,14 +1,14 @@
 # subtitle format they get pulled in from youtube-dl
-IN_FMT=vtt
+IN_DIR=download
 # final output conversion format
 OUT_FMT=srt
-DL_CMD=cd ${IN_FMT} && youtube-dl -i --yes-playlist --write-auto-sub --write-sub --sub-lang en --skip-download
+DL_CMD=cd ${IN_DIR} && youtube-dl -i --write-thumbnail --yes-playlist --write-auto-sub --write-sub --sub-lang en --skip-download
 BROWSERIFY=./node_modules/browserify/bin/cmd.js
 
 default: dir download convert index bundle
 
 dir:
-	mkdir -p ${IN_FMT}
+	mkdir -p ${IN_DIR}
 	#rm -rf ${OUT_FMT}
 	mkdir -p ${OUT_FMT}
 
@@ -26,20 +26,32 @@ download:
 	${DL_CMD} https://www.youtube.com/playlist?list=PLocvq02h-FETPLh3YW5TK5QNbAYkmLKKG || exit 0
 
 convert:
-	find ${IN_FMT}/ -name '*.vtt' -exec ffmpeg -n -i '{}' '{}.${OUT_FMT}' \;
-	mv -v ${IN_FMT}/*.${OUT_FMT} ${OUT_FMT}/
+	find ${IN_DIR}/ -name '*.vtt' -exec ffmpeg -n -i '{}' '{}.${OUT_FMT}' \;
+	mv -v ${IN_DIR}/*.${OUT_FMT} ${OUT_FMT}/
 	#find ./${OUT_FMT}/ -iname '*full*' -exec ./bin/extract.js {} ${LIST_DIR} \;
 
 index:
 	./bin/extract.js ./${OUT_FMT}  searchIndex.json
 
+data:
+	echo -n 'window.DATA=' > dist/searchIndex.js
+	cat searchIndex.json >> dist/searchIndex.js
+	echo -n 'window.VIDS =' > dist/videoIds.js
+	cat searchIndex.json.videoIds >> dist/videoIds.js
+
 bundle:
 	mkdir -p dist
-	echo -n 'window.DATA=' > dist/searchIndex.js
-	cat searchIndex.json >> dist/searchIndex.json
 	${BROWSERIFY} -o ./dist/bundle.js -e ./lib/index.js -d
+
+metadata:
+	mkdir -p dist/metadata
+	ls ./dist/metadata
+	./bin/metadata.js ./download ./dist/metadata
 
 clean:
 	rm -rf ${OUT_FMT}
-	rm -rf ${IN_FMT}
+	rm -rf ${IN_DIR}
 	rm -rf dist
+	rm -rf metadata
+
+.PHONY: download

@@ -4,7 +4,7 @@
 *~
 node_modules/
 srt/
-vtt/
+download/
 *.raw
 dist/
 lib/searchIndex.json.js

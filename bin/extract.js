@@ -12,7 +12,10 @@ if(process.argv.length < 3) {
     '  for searching speech transcripts and locting video ID and',
     '  offset time inside video.'
   ];
-  _.forEach(usage, process.stderr.write);
+  _.forEach(usage, (u) => {
+    process.stderr.write(u);
+    process.stderr.write('\n');
+  });
   process.exit(1);
 }
 
@@ -46,7 +49,7 @@ var index = lunr(function() {
  */
 function videoIdToIndex(videoId) {
   var ix = videoIds.indexOf(videoId);
-  return ix > -1 ? ix : videoIds.push(videoId);
+  return ix > -1 ? ix : videoIds.push(videoId) - 1;
 }
 
 /**
@@ -65,7 +68,7 @@ function hmsToSeconds(str) {
 function processFile(filename) {
   var filepath = indir + '/' + filename;
   // video ID is embedded by default like so by youtube-dl
-  var videoId = filename.match('.*\-(.*)\.en\.vtt\.srt')[1];
+  var videoId = filename.match('.*\-(.{11,})\.en\.vtt\.srt')[1];
   var videoIx = videoIdToIndex(videoId);
   var srt = fs.readFileSync(filepath, 'utf-8');
   var data = parser.fromSrt(srt);
@@ -73,7 +76,6 @@ function processFile(filename) {
   console.log('Processing', filename);
 
   for(var i = 0; i < data.length - forward_steps; i++) {
-    //var subset = data.slice(i, i + forward_steps);
     var subset = data[i];
     var startTime = hmsToSeconds(subset.startTime);
     index.add({
