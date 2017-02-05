@@ -41,6 +41,9 @@ data: index
 	echo -n 'window.VIDS =' > dist/videoIds.js
 	cat searchIndex.json.videoIds >> dist/videoIds.js
 
+css:
+	cp ./node_modules/react-video/dist/react-video.css ./dist/
+
 metadata:
 	mkdir -p dist/metadata
 	ls ./dist/metadata
