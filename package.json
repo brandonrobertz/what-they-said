@@ -1,6 +1,6 @@
 {
   "name": "trump_says_frontend",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "An interactive tool for searching Trump speeches",
   "main": "index.js",
   "scripts": {
