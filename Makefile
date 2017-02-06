@@ -64,8 +64,13 @@ clean:
 SSH_HOST=bxroberts.org
 SSH_PORT=22220
 SSH_USER=brando
-SSH_TARGET_DIR=/var/www/bxroberts.org/public_html/fds98j3o8jf9w8ejw97h9qhew/
+DEPLOY_DIR=wapo209fbb09aac81736
+SSH_TARGET_DIR=/var/www/bxroberts.org/public_html/${DEPLOY_DIR}/
 deploy:
-	rsync -e "ssh -p $(SSH_PORT)" -P -rvzc --delete ./ $(SSH_USER)@$(SSH_HOST):$(SSH_TARGET_DIR) --cvs-exclude
+	rsync -e "ssh -p $(SSH_PORT)" -P -rvzc --delete \
+		./ $(SSH_USER)@$(SSH_HOST):$(SSH_TARGET_DIR) \
+		--cvs-exclude --exclude=download/ \
+		--exclude=node_modules/ --exclude=bin/ \
+		--exclude=srt/
 
 .PHONY: download
