@@ -36,10 +36,8 @@ index:
 	./bin/extract.js ./${OUT_FMT}  searchIndex.json
 
 data: index
-	echo -n 'window.DATA=' > dist/searchIndex.js
-	cat searchIndex.json >> dist/searchIndex.js
-	echo -n 'window.VIDS =' > dist/videoIds.js
-	cat searchIndex.json.videoIds >> dist/videoIds.js
+	cat searchIndex.json > dist/searchIndex.js
+	cat searchIndex.json.videoIds > dist/videoIds.js
 
 css:
 	cp ./node_modules/react-video/dist/react-video.css ./dist/
@@ -51,12 +49,23 @@ metadata:
 
 bundle:
 	mkdir -p dist
-	${BROWSERIFY} -o ./dist/bundle.js -t reactify -e ./lib/App.js -d
+	NODE_ENV=production ${BROWSERIFY} -o ./dist/bundle.js -t reactify -e ./lib/App.js
+	cat ./dist/bundle.js | ./node_modules/uglify-js/bin/uglifyjs -c > ./dist/bundle.min.js
+
+server:
+	http-server ./
 
 clean:
 	rm -rf ${OUT_FMT}
 	rm -rf ${IN_DIR}
 	rm -rf dist
 	rm -rf metadata
+
+SSH_HOST=bxroberts.org
+SSH_PORT=22220
+SSH_USER=brando
+SSH_TARGET_DIR=/var/www/bxroberts.org/public_html/fds98j3o8jf9w8ejw97h9qhew/
+deploy:
+	rsync -e "ssh -p $(SSH_PORT)" -P -rvzc --delete ./ $(SSH_USER)@$(SSH_HOST):$(SSH_TARGET_DIR) --cvs-exclude
 
 .PHONY: download
