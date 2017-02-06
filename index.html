@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="dist/react-video.css" />
     <style>
       body {
+        margin: 0;
+        padding: 0;
       }
       div#app {
         margin: 0 auto;
@@ -44,6 +46,12 @@
       #app img.active {
         border: 2px solid #aa0000;
       }
+      #playVideo {
+        background-color: black;
+	-webkit-transition: background-color 1000ms linear;
+	-ms-transition: background-color 1000ms linear;
+        transition: background-color 1000ms linear;
+      }
       #noVideoSelected  {
         height: 340px;
         width: 500px;
@@ -63,7 +71,7 @@
         font-size: 3em;
       }
       #footer {
-        font-size: 0.9em;
+        font-size: 1.2em;
         color: #666666;
       }
     </style>
