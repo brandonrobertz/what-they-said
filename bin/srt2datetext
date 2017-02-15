@@ -1,0 +1,21 @@
+#!/bin/bash
+
+IFS=$'\n'
+for FILE in $(find ./srt/ -type f -regex '.*[0-9]+.[0-9]+.[0-9]+.*') ; do
+  YMD=`echo $FILE | sed 's/.*[( ]\([0-9]\+\).\([0-9]\+\).\([0-9]\+\).*/\3 \1 \2/g' | grep -v \.en\.`
+  YEAR=`echo $YMD | awk '{if(length($1)==2){print 20$1}else{print $1}}'`
+  MONTH=`echo $YMD | awk '{if(length($2)==1){print 0$2}else{print $2}}'`
+  DAY=`echo $YMD | awk '{if(length($3)==1){print 0$3}else{print $3}}'`
+  #LOCATION=`echo $FILE | sed 's/.*\sin\s\([A-Za-z\-\. ]\+,\s[A-Za-z]\+\).*/\1/g'`
+
+  if [ -z $YEAR$MONTH$DAY ]; then
+	  continue
+  fi
+
+  if [ $YEAR -lt 2014 ]; then
+	  continue
+  fi
+
+  echo $YEAR-$MONTH-$DAY
+
+done

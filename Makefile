@@ -68,12 +68,18 @@ clean:
 	rm -rf dist
 	rm -rf metadata
 
+files2dates:
+	find srt/ -type f -regex '.*[0-9]+.[0-9]+.[0-9]+.*' | sed 's/.*[( ]\([0-9]\+\).\([0-9]\+\).\([0-9]\+\).*/\1 \2 \3/g' | grep -v \.en\.
+
+fulltext:
+	find ./${OUT_FMT}/ -type f -exec ./bin/srt2text.js {} \; > fulltext
+
 deploy:
 	rsync -e "ssh -p $(SSH_PORT)" -P -rvzc --delete-after \
 		./ $(SSH_USER)@$(SSH_HOST):$(SSH_TARGET_DIR) \
 		--cvs-exclude --exclude=download/ \
 		--exclude=node_modules/ --exclude=bin/ \
 		--exclude=srt/ --exclude=Makefile \
-		--exclude='.*.swp' --exclude='.*.swo' 
+		--exclude='.*.swp' --exclude='.*.swo'
 
-.PHONY: download
+.PHONY: download fulltext
