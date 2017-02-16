@@ -5,6 +5,14 @@ OUT_FMT=srt
 DL_CMD=cd ${IN_DIR} && youtube-dl -i --write-thumbnail --yes-playlist --write-auto-sub --write-sub --sub-lang en --skip-download
 BROWSERIFY=./node_modules/browserify/bin/cmd.js
 
+# part of my seattle-data-project repository
+WORDMAP_GEN=${HOME}/NEXUS/research/seattle_data_project/process/wordmap_generator
+WORDMAP_VEC=${HOME}/NEXUS/research/seattle_data_project/process/wordmap_vectorizer
+PRINT_TOPICS=${HOME}/bin/ml/print.topics.R
+
+# hierarchical LDA
+HDP=${HOME}/src/hdp/hdp/hdp
+
 # deploy stuff
 SSH_HOST=bxroberts.org
 SSH_PORT=22220
@@ -69,10 +77,24 @@ clean:
 	rm -rf metadata
 
 files2dates:
-	find srt/ -type f -regex '.*[0-9]+.[0-9]+.[0-9]+.*' | sed 's/.*[( ]\([0-9]\+\).\([0-9]\+\).\([0-9]\+\).*/\1 \2 \3/g' | grep -v \.en\.
+	find srt/ -type f -regex '.*[0-9]+.[0-9]+.[0-9]+.*' \
+		| sed 's/.*[( ]\([0-9]\+\).\([0-9]\+\).\([0-9]\+\).*/\1 \2 \3/g' \
+		| grep -v \.en\.
 
 fulltext:
 	find ./${OUT_FMT}/ -type f -exec ./bin/srt2text.js {} \; > fulltext
+
+fulltext.wordmap:
+	cat ./fulltext | ${WORDMAP_GEN} > ./fulltext.wordmap
+
+fulltext.ldac: fulltext.wordmap
+	cat ./fulltext | ${WORDMAP_VEC} ./fulltext.wordmap > ./fulltext.ldac
+
+fulltext.topics:
+	# ${PRINT_TOPICS} `pwd`/fulltext-topics/iter@00100.counts `pwd`/fulltext.wordmap `pwd`/fulltext-topics/iter@00100.topics
+	~/NEXUS/research/seattle_data_project/analysis/lda-c-dist/topics.py \
+		/home/brando/NEXUS/code/javascript/what_trump_said/fulltext-topics/iter@00100.beta \
+		/home/brando/NEXUS/code/javascript/what_trump_said/fulltext.wordmap 10
 
 deploy:
 	rsync -e "ssh -p $(SSH_PORT)" -P -rvzc --delete-after \
@@ -82,4 +104,4 @@ deploy:
 		--exclude=srt/ --exclude=Makefile \
 		--exclude='.*.swp' --exclude='.*.swo'
 
-.PHONY: download fulltext
+.PHONY: download fulltext fulltext.wordmap fulltext.ldac

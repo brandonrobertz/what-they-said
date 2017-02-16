@@ -12,11 +12,7 @@ var infile = process.argv[process.argv.length - 1];
 var data = fs.readFileSync(infile);
 var lines = data.toString().split('\n');
 
-function output(line) {
-  if(line) {
-    console.log(line);
-  }
-}
+var outputs = '';
 
 for(var i = 0; i < lines.length; i++) {
   var line = lines[i].trim();
@@ -47,5 +43,10 @@ for(var i = 0; i < lines.length; i++) {
     continue;
   }
 
-  output(line);
+  if(line[line.length - 1] !== ' ') {
+    line += ' ';
+  }
+  outputs += line.replace('\n', '').replace('\r', '')
 }
+
+console.log(outputs);
