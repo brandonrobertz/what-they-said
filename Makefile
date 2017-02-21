@@ -81,15 +81,16 @@ files2dates:
 		| sed 's/.*[( ]\([0-9]\+\).\([0-9]\+\).\([0-9]\+\).*/\1 \2 \3/g' \
 		| grep -v \.en\.
 
-dataset:
+corpus:
 	find ./${OUT_FMT}/ -type f -exec ./bin/srt2text {} \; \
-		| fold -s -w 150 \
+		| fold -s -w 350 \
 		> fulltext
 	cat fulltext \
 		| ./bin/preprocess_text \
+		| ./bin/stemmer \
 		> fulltext.cleaned
 	cat fulltext.cleaned \
-		| ./tf \
+		| ./bin/tf \
 		> tf.dat
 	cat fulltext.cleaned \
 		| ./tf-idf tf.dat -t --top-n 5 --appear-thresh 0.005 \
