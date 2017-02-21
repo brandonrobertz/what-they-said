@@ -81,14 +81,29 @@ files2dates:
 		| sed 's/.*[( ]\([0-9]\+\).\([0-9]\+\).\([0-9]\+\).*/\1 \2 \3/g' \
 		| grep -v \.en\.
 
-fulltext:
-	find ./${OUT_FMT}/ -type f -exec ./bin/srt2text.js {} \; > fulltext
-
-fulltext.wordmap:
-	cat ./fulltext | ${WORDMAP_GEN} > ./fulltext.wordmap
-
-fulltext.ldac: fulltext.wordmap
-	cat ./fulltext | ${WORDMAP_VEC} ./fulltext.wordmap > ./fulltext.ldac
+dataset:
+	find ./${OUT_FMT}/ -type f -exec ./bin/srt2text {} \; \
+		| fold -s -w 150 \
+		> fulltext
+	cat fulltext \
+		| ./bin/preprocess_text \
+		> fulltext.cleaned
+	cat fulltext.cleaned \
+		| ./tf \
+		> tf.dat
+	cat fulltext.cleaned \
+		| ./tf-idf tf.dat -t --top-n 5 --appear-thresh 0.005 \
+		> fulltext.trimmed
+	cat fulltext.trimmed \
+		| tr ' ' '\n' \
+		| sort -n \
+		| uniq \
+		| grep -v '^$$' \
+		| grep -v '^.$$' \
+		> fulltext.wordlist
+	cat fulltext.trimmed \
+		| ./tf-idf tf.dat -v ./fulltext.wordlist \
+		> ./fulltext.ldac
 
 fulltext.topics:
 	# ${PRINT_TOPICS} `pwd`/fulltext-topics/iter@00100.counts `pwd`/fulltext.wordmap `pwd`/fulltext-topics/iter@00100.topics
@@ -103,5 +118,15 @@ deploy:
 		--exclude=node_modules/ --exclude=bin/ \
 		--exclude=srt/ --exclude=Makefile \
 		--exclude='.*.swp' --exclude='.*.swo'
+
+average_wordlength:
+	# NOTE: this can take a while
+	# Last result was: 5.24833
+	cat fulltext \
+		| while read L; do for w in $L; do echo $w | wc -c; done; done \
+		| awk '{ N=N+$1; I=I+1; } END { print N / I}'
+
+total_footage:
+	find srt/ -exec ./bin/transcript_hours "{}" \; | awk '{ N=N+$1} END{ print N}'
 
 .PHONY: download fulltext fulltext.wordmap fulltext.ldac

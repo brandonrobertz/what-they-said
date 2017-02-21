@@ -8,6 +8,15 @@ var fs = require('fs');
 // performance too much
 var lookback = 5 * 4;
 
+if (process.argv.length < 3) {
+  console.log('USAGE: srt2text infile.srt');
+  console.log(' This program takes SRT-encoded caption files,');
+  console.log(' extracts the captions, dedupes, and outputs');
+  console.log(' the full text of the contents. Outputs one line');
+  console.log(' per input caption file.');
+  process.exit(1);
+}
+
 var infile = process.argv[process.argv.length - 1];
 var data = fs.readFileSync(infile);
 var lines = data.toString().split('\n');
