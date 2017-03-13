@@ -11,4 +11,6 @@ fi
 
 cat ${1} \
   | tr -c -d '[:print:]\n' \
-  | tr '[:upper:]' '[:lower:]'
+  | tr '[:upper:]' '[:lower:]' \
+  | sed 's/\[[^\s]*\]//g' \
+  | sed 's/[0-9\,]\+//g'

@@ -82,29 +82,20 @@ files2dates:
 		| grep -v \.en\.
 
 corpus:
+	#| fold -s -w 140
 	find ./${OUT_FMT}/ -type f -exec ./bin/srt2text {} \; \
-		| fold -s -w 350 \
 		> fulltext
-	cat fulltext \
-		| ./bin/preprocess_text \
-		| ./bin/stemmer \
-		> fulltext.cleaned
-	cat fulltext.cleaned \
-		| ./bin/tf \
-		> tf.dat
-	cat fulltext.cleaned \
-		| ./tf-idf tf.dat -t --top-n 5 --appear-thresh 0.005 \
-		> fulltext.trimmed
-	cat fulltext.trimmed \
-		| tr ' ' '\n' \
-		| sort -n \
-		| uniq \
-		| grep -v '^$$' \
-		| grep -v '^.$$' \
-		> fulltext.wordlist
-	cat fulltext.trimmed \
-		| ./tf-idf tf.dat -v ./fulltext.wordlist \
-		> ./fulltext.ldac
+
+corpus.trimmed:
+	cat fulltext | ./bin/preprocess_text > fulltext.cleaned
+	cat fulltext.cleaned | ./bin/tf > tf.dat
+	cat fulltext.cleaned | ./bin/tf-idf tf.dat -t --top-n 7 > fulltext.keywords
+
+clusters:
+	rm -rf clusters/*.svg
+	./bin/fasttext skipgram -dim 100 -input fulltext.cleaned -output fulltext.model
+	./bin/fasttext print-vectors fulltext.model.bin < fulltext.keywords > fulltext.keywords.vec
+	./bin/kmeans.py fulltext.keywords.vec
 
 fulltext.topics:
 	# ${PRINT_TOPICS} `pwd`/fulltext-topics/iter@00100.counts `pwd`/fulltext.wordmap `pwd`/fulltext-topics/iter@00100.topics
@@ -130,4 +121,8 @@ average_wordlength:
 total_footage:
 	find srt/ -exec ./bin/transcript_hours "{}" \; | awk '{ N=N+$1} END{ print N}'
 
-.PHONY: download fulltext fulltext.wordmap fulltext.ldac
+deploy_clusters:
+	rsync --delete -av --progress -e 'ssh -p 22220'  ./clusters brando@bxroberts.org:/var/www/bxroberts.org/public_html/k-means/
+
+
+.PHONY: download fulltext fulltext.wordmap fulltext.ldac clusters
