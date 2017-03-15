@@ -96,7 +96,7 @@ corpus.trimmed:
 # -loss softmax makes the training take REALLY long
 fulltext.keywords.vectors:
 	rm -rf clusters/*.svg
-	./bin/fasttext skipgram -thread 1 -loss softmax -dim 100 -input fulltext.cleaned -output fulltext.model
+	./bin/fasttext skipgram -thread 1 -dim 100 -input fulltext.cleaned -output fulltext.model
 	./bin/fasttext print-vectors fulltext.model.bin < fulltext.keywords > fulltext.keywords.vec
 
 clusters:
