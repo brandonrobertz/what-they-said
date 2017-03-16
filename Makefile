@@ -81,25 +81,24 @@ files2dates:
 		| sed 's/.*[( ]\([0-9]\+\).\([0-9]\+\).\([0-9]\+\).*/\1 \2 \3/g' \
 		| grep -v \.en\.
 
-corpus:
+fulltext:
 	#| fold -s -w 140
 	find ./${OUT_FMT}/ -type f -exec ./bin/srt2text {} \; \
 		> fulltext
 
-corpus.trimmed:
+fulltext.keywords:
 	cat fulltext | ./bin/preprocess_text > fulltext.cleaned
-	cat fulltext.cleaned | ./bin/tf > tf.dat
-	cat fulltext.cleaned | ./bin/tf-idf tf.dat -t --top-n 6 > fulltext.keywords
+	cat fulltext.cleaned | ./bin/tf-idf-extract.py fulltext.cleaned --pct 0.01 > fulltext.keywords
 
 # NOTE: fasttest -thread 1 makes the results deterministic due to randomness
 # in mult-threaded async gradient descent algorithm
 # -loss softmax makes the training take REALLY long & aren't as good
-fulltext.keywords.vectors:
+fulltext.keywords.vec: fulltext.keywords
 	rm -rf clusters/*.svg
 	./bin/fasttext skipgram -thread 1 -dim 100 -input fulltext.cleaned -output fulltext.model
 	./bin/fasttext print-vectors fulltext.model.bin < fulltext.keywords > fulltext.keywords.vec
 
-clusters:
+clusters: fulltext.keywords.vec
 	./bin/kmeans.py fulltext.keywords.vec
 
 fulltext.topics:
@@ -130,4 +129,4 @@ deploy_clusters:
 	rsync --delete -av --progress -e 'ssh -p 22220'  ./clusters brando@bxroberts.org:/var/www/bxroberts.org/public_html/k-means/
 
 
-.PHONY: download fulltext fulltext.wordmap fulltext.ldac clusters
+.PHONY: download fulltext fulltext.wordmap fulltext.ldac clusters fulltext.keywords fulltext.keywords.vec
