@@ -89,11 +89,11 @@ corpus:
 corpus.trimmed:
 	cat fulltext | ./bin/preprocess_text > fulltext.cleaned
 	cat fulltext.cleaned | ./bin/tf > tf.dat
-	cat fulltext.cleaned | ./bin/tf-idf tf.dat -t --top-n 7 > fulltext.keywords
+	cat fulltext.cleaned | ./bin/tf-idf tf.dat -t --top-n 6 > fulltext.keywords
 
 # NOTE: fasttest -thread 1 makes the results deterministic due to randomness
 # in mult-threaded async gradient descent algorithm
-# -loss softmax makes the training take REALLY long
+# -loss softmax makes the training take REALLY long & aren't as good
 fulltext.keywords.vectors:
 	rm -rf clusters/*.svg
 	./bin/fasttext skipgram -thread 1 -dim 100 -input fulltext.cleaned -output fulltext.model
