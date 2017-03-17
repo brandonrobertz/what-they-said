@@ -20,7 +20,7 @@
             .cluster {
                 position: relative;
                 display: inline-block;
-                width: 45%;
+                width: 90%;
                 margin: 1%;
                 border: 1px solid #bbbbbb;
                 box-shadow: 1px 1px 5px #cccccc;
@@ -122,7 +122,6 @@
 			input[type=range]:focus::-ms-fill-upper {
 				background: #0f0f0f;
 			}
-
 			button {
 				background-color: Transparent;
 				background-repeat:no-repeat;
@@ -134,7 +133,7 @@
         </style>
     </head>
     <body>
-        <h1>{{clusters[-1]}} clusters</h1>
+        <h1>{{ clusters|length }} clusters</h1>
         {% for cluster in clusters %}
         <div id="cluster-{{cluster}}" class="cluster cluster-zoomable" >
             <div class="panzoom-parent"><img class="panzoom cluster-img" src="{{cluster}}.svg"  /></div>
@@ -148,7 +147,7 @@
     </body>
     <script>
     (function() {
-        var num_clusters = 20;
+        var num_clusters = {{ clusters|length }};
         for(var i = 0; i < num_clusters; i++) {
 			var cluster = $('#cluster-' + i);
 			var $section = cluster;

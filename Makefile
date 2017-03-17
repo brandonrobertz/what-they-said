@@ -86,15 +86,16 @@ fulltext:
 	find ./${OUT_FMT}/ -type f -exec ./bin/srt2text {} \; \
 		> fulltext
 
-fulltext.keywords:
+fulltext.cleaned:
 	cat fulltext | ./bin/preprocess_text > fulltext.cleaned
-	cat fulltext.cleaned | ./bin/tf-idf-extract.py fulltext.cleaned --pct 0.01 > fulltext.keywords
+
+fulltext.keywords: fulltext.cleaned
+	./bin/tf-idf-extract.py fulltext.cleaned --pct 0.05 --max 7 > fulltext.keywords
 
 # NOTE: fasttest -thread 1 makes the results deterministic due to randomness
 # in mult-threaded async gradient descent algorithm
 # -loss softmax makes the training take REALLY long & aren't as good
 fulltext.keywords.vec: fulltext.keywords
-	rm -rf clusters/*.svg
 	./bin/fasttext skipgram -thread 1 -dim 100 -input fulltext.cleaned -output fulltext.model
 	./bin/fasttext print-vectors fulltext.model.bin < fulltext.keywords > fulltext.keywords.vec
 
