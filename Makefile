@@ -82,15 +82,17 @@ files2dates:
 		| grep -v \.en\.
 
 fulltext:
-	#| fold -s -w 140
-	find ./${OUT_FMT}/ -type f -exec ./bin/srt2text {} \; \
-		> fulltext
+	# make sure we're using the same index across
+	find ./${OUT_FMT}/ -type f > fulltext.titles
+	# then use it here for clustering pipe and also later
+	cat fulltext.titles | xargs -d '\n' -I '{}' ./bin/srt2text '{}' > fulltext3
 
+# we don't need to run fulltext every time as it's a bit expensive
 fulltext.cleaned:
 	cat fulltext | ./bin/preprocess_text > fulltext.cleaned
 
 fulltext.keywords: fulltext.cleaned
-	./bin/tf-idf-extract.py fulltext.cleaned --pct 0.05 --max 7 > fulltext.keywords
+	./bin/tf-idf-extract.py fulltext.cleaned --pct 0.05 --max 10 > fulltext.keywords
 
 # NOTE: fasttest -thread 1 makes the results deterministic due to randomness
 # in mult-threaded async gradient descent algorithm
@@ -101,6 +103,10 @@ fulltext.keywords.vec: fulltext.keywords
 
 clusters: fulltext.keywords.vec
 	./bin/kmeans.py fulltext.keywords.vec
+	cat clusters/clusters.txt | sort -n | uniq > clusters/clusters.uniq.txt
+
+fulltext.speech.clusters: clusters
+	./bin/speech2clusters_count.py clusters/clusters.txt fulltext.cleaned > fulltext.datetime.clusters
 
 fulltext.topics:
 	# ${PRINT_TOPICS} `pwd`/fulltext-topics/iter@00100.counts `pwd`/fulltext.wordmap `pwd`/fulltext-topics/iter@00100.topics
