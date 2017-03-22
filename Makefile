@@ -105,7 +105,7 @@ clusters: fulltext.keywords.vec
 	./bin/kmeans.py fulltext.keywords.vec
 	cat clusters/clusters.txt | sort -n | uniq > clusters/clusters.uniq.txt
 
-fulltext.speech.clusters: clusters
+fulltext.datetime.clusters: clusters
 	./bin/build_timeseries.py clusters/clusters.txt fulltext.cleaned fulltext.titles > fulltext.datetime.clusters
 
 fulltext.topics:
@@ -136,4 +136,5 @@ deploy_clusters:
 	rsync --delete -av --progress -e 'ssh -p 22220'  ./clusters brando@bxroberts.org:/var/www/bxroberts.org/public_html/k-means/
 
 
-.PHONY: download fulltext fulltext.wordmap fulltext.ldac clusters fulltext.keywords fulltext.keywords.vec
+.PHONY: download fulltext fulltext.wordmap fulltext.ldac clusters fulltext.keywords \
+		fulltext.keywords.vec fulltext.datetime.clusters
