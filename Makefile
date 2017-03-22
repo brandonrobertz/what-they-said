@@ -135,6 +135,5 @@ total_footage:
 deploy_clusters:
 	rsync --delete -av --progress -e 'ssh -p 22220'  ./clusters brando@bxroberts.org:/var/www/bxroberts.org/public_html/k-means/
 
-
 .PHONY: download fulltext fulltext.wordmap fulltext.ldac clusters fulltext.keywords \
 		fulltext.keywords.vec fulltext.datetime.clusters
