@@ -106,7 +106,7 @@ clusters: fulltext.keywords.vec
 	cat clusters/clusters.txt | sort -n | uniq > clusters/clusters.uniq.txt
 
 fulltext.datetime.clusters: clusters
-	./bin/build_timeseries.py clusters/clusters.txt fulltext.cleaned fulltext.titles > fulltext.datetime.clusters
+	./bin/build_timeseries.py clusters/clusters.txt fulltext.cleaned fulltext.titles > clusters/fulltext.datetime.clusters.json
 
 fulltext.topics:
 	# ${PRINT_TOPICS} `pwd`/fulltext-topics/iter@00100.counts `pwd`/fulltext.wordmap `pwd`/fulltext-topics/iter@00100.topics

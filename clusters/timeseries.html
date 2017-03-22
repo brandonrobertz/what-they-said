@@ -1,0 +1,31 @@
+
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Clusters Timeseries</title>
+        <script src="js/jquery.min.js"></script>
+        <script src="js/d3.min.js"></script>
+        <script src="js/d3.layout.min.js"></script>
+        <script src="js/rickshaw.min.js"></script>
+    </head>
+    <body>
+        <div id="legend"></div>
+        <div id="timeseries"></div>
+    </body>
+<script>
+d3.json('fulltext.datetime.clusters.json', function(data) {
+  var graph = new Rickshaw.Graph( {
+    element: document.querySelector("#timeseries"),
+    width: 900,
+    height: 200,
+    renderer: 'bar',
+    //renderer: 'bar',
+    series: [{
+      color: 'steelblue',
+      data: data[0]
+    }]
+  });
+  graph.render();
+});
+</script>
+</html>
