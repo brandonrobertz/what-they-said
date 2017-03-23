@@ -85,11 +85,11 @@ def date_from_title(title):
 
     ymd = "{}-{}-{}".format(year, month.zfill(2), day.zfill(2))
 
-    ts = date_str_to_timestamp(ymd)
-    if not ts:
-        log("TS failure on title: {}".format(title))
+    # ts = date_str_to_timestamp(ymd)
+    # if not ts:
+    #     log("TS failure on title: {}".format(title))
 
-    return ts
+    return ymd
 
 
 def date_str_to_timestamp(date):
@@ -98,6 +98,7 @@ def date_str_to_timestamp(date):
         log("FAILED PARSING TIME {}".format(date))
         return None
     return time.mktime(t.timetuple())
+
 
 def extract_dates(titles_file):
     dates = []

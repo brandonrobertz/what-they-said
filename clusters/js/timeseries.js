@@ -9,6 +9,8 @@ d3.json('fulltext.datetime.clusters.json', function(data) {
   for(var i = 0; i < data.length; i++) {
     MG.data_graphic({
       title: 'Cluster-' + i.toString(),
+      center_title_full_width: true,
+      linked: true,
       //description: "Representation of cluster topics on the campaign trail.",
       data: data[i], //.slice(0, 20),
       interpolate: d3.curveStep,
@@ -24,8 +26,9 @@ d3.json('fulltext.datetime.clusters.json', function(data) {
       x_extended_ticks: true,
       min_x: new Date("2015-01-01"),
       max_x: new Date("2017-01-30"),
-      max_y: 0.15,
+      max_y: 0.10,
       min_y: 0,
     });
   }
+
 });
