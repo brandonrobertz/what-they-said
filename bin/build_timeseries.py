@@ -109,7 +109,7 @@ def extract_dates(titles_file):
     return dates
 
 
-def count_clusters_in_doc(cluster_words, document):
+def count_clusters_in_doc(cluster_words, document, pct_of_doclen=False):
     """ Take a document and the cluster_words associative array, and
     output a count for each cluster and the number of occurrences in
     this document.
@@ -140,9 +140,20 @@ def count_clusters_in_doc(cluster_words, document):
     for c in counts:
         raw = counts[c]
         log("C: {} Raw: {}".format(c, raw))
-        counts[c] = float(raw) / total_words
+        if pct_of_doclen:
+            counts[c] = float(raw) / total_words
+        else:
+            counts[c] = raw
 
     return counts
+
+
+def ts_to_df(ts, cid):
+    df = pd.DataFrame.from_records(ts)
+    ix = pd.DatetimeIndex(df['date']).unique()
+    df.set_index(ix, inplace=True)
+    df.drop('date', 1, inplace=True)
+    return df
 
 
 def usage():
@@ -169,23 +180,39 @@ if __name__ == "__main__":
             cluster_counts = count_clusters_in_doc(cluster_words, document)
             clusters.append(cluster_counts)
 
-    # now we have an array of lists of [ (year, month, day), {cluster: counts}]
+    # we need to get every date so we can combine dupes
+    total_clusters = cluster_words.keys()[-1] + 1
+    dates_index = set(filter(lambda x: x, dates))
+
+    # now we have an array of lists of [ [ date, {cluster: counts}], ...]
     joint = zip(dates, clusters)
 
-    # we need a list, one per cluster, of date and value
-    timeseries = [ [] for _ in range(max(cluster_words.keys())+1)]
+    timeseries = {}
     for date, counts in joint:
 
         if not date:
             continue
 
+        if date not in timeseries:
+            timeseries[date] = {}
+
         for cid in counts.keys():
-            timeseries[cid].append({
-                'date': date,
-                'value': counts[cid]
-            })
+            label = 'Cluster-{}'.format(cid)
+            if label not in timeseries[date]:
+                timeseries[date][label] = 0.0
 
-    for ix in range(len(timeseries)):
-        timeseries[ix].sort(key=lambda x: x['date'])
+            timeseries[date][label] += counts[cid]
 
-    print json.dumps(timeseries, indent=4)
+    timeseries_flat = []
+    for date in timeseries:
+        records = timeseries[date]
+        records['date'] = date
+        timeseries_flat.append(records)
+
+    # we need a column for each cluster, indexed by date
+    df = pd.DataFrame.from_records(timeseries_flat)
+    df.set_index(pd.DatetimeIndex(df['date']), inplace=True)
+    df.drop('date', 1, inplace=True)
+    df.fillna(0, inplace=True)
+
+    print df.resample('W').sum().to_json()
