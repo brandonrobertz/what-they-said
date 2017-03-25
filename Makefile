@@ -17,7 +17,7 @@ HDP=${HOME}/src/hdp/hdp/hdp
 SSH_HOST=bxroberts.org
 SSH_PORT=22220
 SSH_USER=brando
-DEPLOY_DIR=wapo209fbb09aac81736
+DEPLOY_DIR=trump_clusters
 SSH_TARGET_DIR=/var/www/bxroberts.org/public_html/${DEPLOY_DIR}/
 
 default: index data metadata bundle
@@ -106,7 +106,7 @@ clusters: fulltext.keywords.vec
 	cat clusters/clusters.txt | sort -n | uniq > clusters/clusters.uniq.txt
 
 fulltext.datetime.clusters: clusters
-	./bin/build_timeseries.py clusters/clusters.txt fulltext.cleaned fulltext.titles > clusters/fulltext.datetime.clusters.json
+	./bin/build_timeseries.py clusters/clusters.txt fulltext.cleaned fulltext.titles stopwords.txt > clusters/fulltext.datetime.clusters.json
 
 fulltext.topics:
 	# ${PRINT_TOPICS} `pwd`/fulltext-topics/iter@00100.counts `pwd`/fulltext.wordmap `pwd`/fulltext-topics/iter@00100.topics
@@ -114,13 +114,18 @@ fulltext.topics:
 		/home/brando/NEXUS/code/javascript/what_trump_said/fulltext-topics/iter@00100.beta \
 		/home/brando/NEXUS/code/javascript/what_trump_said/fulltext.wordmap 10
 
-deploy:
+deploy_said:
 	rsync -e "ssh -p $(SSH_PORT)" -P -rvzc --delete-after \
 		./ $(SSH_USER)@$(SSH_HOST):$(SSH_TARGET_DIR) \
 		--cvs-exclude --exclude=download/ \
 		--exclude=node_modules/ --exclude=bin/ \
 		--exclude=srt/ --exclude=Makefile \
 		--exclude='.*.swp' --exclude='.*.swo'
+
+deploy_clusters:
+	rsync -e "ssh -p $(SSH_PORT)" -P -rvzc --delete-after \
+		./clusters/ $(SSH_USER)@$(SSH_HOST):$(SSH_TARGET_DIR)
+
 
 average_wordlength:
 	# NOTE: this can take a while
@@ -131,9 +136,6 @@ average_wordlength:
 
 total_footage:
 	find srt/ -exec ./bin/transcript_hours "{}" \; | awk '{ N=N+$1} END{ print N}'
-
-deploy_clusters:
-	rsync --delete -av --progress -e 'ssh -p 22220'  ./clusters brando@bxroberts.org:/var/www/bxroberts.org/public_html/k-means/
 
 .PHONY: download fulltext fulltext.wordmap fulltext.ldac clusters fulltext.keywords \
 		fulltext.keywords.vec fulltext.datetime.clusters

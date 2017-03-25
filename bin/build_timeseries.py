@@ -13,6 +13,12 @@ def log(msg, err=True):
         sys.stderr.write('\n')
 
 
+def read_stopwords(filename):
+    with open(filename) as f:
+        words = f.readlines()
+    return map(lambda w: w.lower().strip, words)
+
+
 def read_clusters_txt(filename):
     with open(filename) as f:
         lines = f.readlines()
@@ -109,7 +115,7 @@ def extract_dates(titles_file):
     return dates
 
 
-def count_clusters_in_doc(cluster_words, document, pct_of_doclen=False):
+def count_clusters_in_doc(cluster_words, document, stopwords, pct_of_doclen=False):
     """ Take a document and the cluster_words associative array, and
     output a count for each cluster and the number of occurrences in
     this document.
@@ -121,10 +127,17 @@ def count_clusters_in_doc(cluster_words, document, pct_of_doclen=False):
     log("total_words {}".format(total_words))
     for c in cluster_words:
         for word in set(cluster_words[c]):
+            if c not in counts:
+                counts[c] = 0
+
             if word not in document:
                 continue
 
             if not word.strip():
+                continue
+
+            if word in stopwords:
+                log("Skipping {}".format(word))
                 continue
 
             reg = re.compile('\\b{}\\b'.format(re.escape(word)))
@@ -132,8 +145,6 @@ def count_clusters_in_doc(cluster_words, document, pct_of_doclen=False):
             if not n:
                 continue
 
-            if c not in counts:
-                counts[c] = 0
             counts[c] += n
 
     # normalize
@@ -157,7 +168,8 @@ def ts_to_df(ts, cid):
 
 
 def usage():
-    print "USAGE: build_timeseries.py clusters/clusters.txt fulltext.cleaned fulltext.titles"
+    print "USAGE: build_timeseries.py clusters/clusters.txt fulltext.cleaned " \
+        "fulltext.titles stopwords.txt"
     sys.exit(1)
 
 
@@ -170,14 +182,18 @@ if __name__ == "__main__":
     CLUSTERS_TXT=sys.argv[1]
     FULLTEXT_FILE=sys.argv[2]
     TITLES_FILE=sys.argv[3]
+    STOPWORDS_FILE=sys.argv[4]
 
     cluster_words = read_clusters_txt(CLUSTERS_TXT)
     dates = extract_dates(TITLES_FILE)
+    stopwords = read_stopwords(STOPWORDS_FILE)
 
     clusters = []
     with open(FULLTEXT_FILE) as f:
         for document in f.readlines():
-            cluster_counts = count_clusters_in_doc(cluster_words, document)
+            cluster_counts = count_clusters_in_doc(
+                cluster_words, document, stopwords
+            )
             clusters.append(cluster_counts)
 
     # we need to get every date so we can combine dupes
@@ -214,5 +230,6 @@ if __name__ == "__main__":
     df.set_index(pd.DatetimeIndex(df['date']), inplace=True)
     df.drop('date', 1, inplace=True)
     df.fillna(0, inplace=True)
+    df.sort(inplace=True)
 
     print df.resample('W').sum().to_json()

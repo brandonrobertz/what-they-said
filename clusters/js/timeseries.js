@@ -1,4 +1,37 @@
 d3.json('fulltext.datetime.clusters.json', function(data) {
+  var cluster_descriptions = [
+    "Iran & Iraq",
+    "Trade",
+    "Lost American Jobs",
+    "Winning",
+    "Immigrants + Crime",
+    "Political Conservatism",
+    "Rallies & Supporters",
+    "Establishment + Corruption",
+    "Osama bin Laden",
+    "Debates & Cheating",
+    "'The Snake'",
+    "Lyin' Ted",
+    "Political Associates & Opponents",
+    "Oil",
+    "Cluster 14 - Catchall (Mostly Negative)",
+    "Inner Cities + Crime",
+    "'Blacks' + 'Color'",
+    "Winning Places",
+    "Wikileaks + Clinton Foundation",
+    "Cluster-19 - Catchall Activities/Values",
+    "Global Militarism & Policy",
+    "Rigged System",
+    "Cluster 22",
+    "'Tender Snake'",
+    "Clinton",
+    "Cluster 25 - Catchall Conflict/Spanish",
+    "Winning Places",
+    "Positive Associates",
+    "Education",
+    "War Heroes"
+  ];
+
 
   var total_clusters = 30;
   var formatted = [];
@@ -25,18 +58,23 @@ d3.json('fulltext.datetime.clusters.json', function(data) {
   console.info('Reformating complete.');
 
   for (var i = 0; i < total_clusters; i++) {
+    if (cluster_descriptions[i].match(/Cluster/)){
+      continue;
+    }
     var title = legend[i];
     var clusterData = formatted[i];
     MG.data_graphic({
-      title: title,
+      title: cluster_descriptions[i],
       center_title_full_width: true,
       linked: true,
       //description: "Representation of cluster topics on the campaign trail.",
       data: clusterData, //.slice(0, 20),
+      chart_type: 'point',
       interpolate: d3.curveStep,
-      full_width: true,
-      height: 150,
+      height: 250,
+      width: 650,
       yax_count: 3,
+      //least_squares: true,
       //right: 40,
       target: '#' + title.toLowerCase(),
       //legend: ,
@@ -51,7 +89,7 @@ d3.json('fulltext.datetime.clusters.json', function(data) {
       //min_y: 0,
       y_label: 'Mentions',
       left: 70,
-      top:10,
+      top:15,
     });
   }
 
