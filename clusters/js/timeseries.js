@@ -36,6 +36,9 @@ d3.json('fulltext.datetime.clusters.json', function(data) {
   var total_clusters = 30;
   var formatted = [];
   var legend = [];
+  var markers = [{
+    date: new Date('September 26, 2016'), label: 'First Presidential Debate'
+  }];
 
   console.info('Reformating data ...');
 
@@ -70,7 +73,7 @@ d3.json('fulltext.datetime.clusters.json', function(data) {
       //description: "Representation of cluster topics on the campaign trail.",
       data: clusterData, //.slice(0, 20),
       chart_type: 'point',
-      interpolate: d3.curveStep,
+      //interpolate: d3.curveStep,
       height: 250,
       width: 650,
       yax_count: 3,
@@ -90,6 +93,7 @@ d3.json('fulltext.datetime.clusters.json', function(data) {
       y_label: 'Mentions',
       left: 70,
       top:15,
+      markers: markers,
     });
   }
 
