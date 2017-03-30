@@ -6,19 +6,19 @@ DL_CMD=cd ${IN_DIR} && youtube-dl -i --write-thumbnail --yes-playlist --write-au
 BROWSERIFY=./node_modules/browserify/bin/cmd.js
 
 # part of my seattle-data-project repository
-WORDMAP_GEN=${HOME}/NEXUS/research/seattle_data_project/process/wordmap_generator
-WORDMAP_VEC=${HOME}/NEXUS/research/seattle_data_project/process/wordmap_vectorizer
+WORDMAP_GEN=${HOME}/process/wordmap_generator
+WORDMAP_VEC=${HOME}/process/wordmap_vectorizer
 PRINT_TOPICS=${HOME}/bin/ml/print.topics.R
 
 # hierarchical LDA
 HDP=${HOME}/src/hdp/hdp/hdp
 
 # deploy stuff
-SSH_HOST=bxroberts.org
-SSH_PORT=22220
-SSH_USER=brando
-DEPLOY_DIR=trump_clusters
-SSH_TARGET_DIR=/var/www/bxroberts.org/public_html/${DEPLOY_DIR}/
+SSH_HOST=
+SSH_PORT=
+SSH_USER=
+DEPLOY_DIR=
+SSH_TARGET_DIR=
 
 default: index data metadata bundle
 
@@ -110,9 +110,9 @@ fulltext.datetime.clusters: clusters
 
 fulltext.topics:
 	# ${PRINT_TOPICS} `pwd`/fulltext-topics/iter@00100.counts `pwd`/fulltext.wordmap `pwd`/fulltext-topics/iter@00100.topics
-	~/NEXUS/research/seattle_data_project/analysis/lda-c-dist/topics.py \
-		/home/brando/NEXUS/code/javascript/what_trump_said/fulltext-topics/iter@00100.beta \
-		/home/brando/NEXUS/code/javascript/what_trump_said/fulltext.wordmap 10
+	~/analysis/lda-c-dist/topics.py \
+		~/what_trump_said/fulltext-topics/iter@00100.beta \
+		~/what_trump_said/fulltext.wordmap 10
 
 deploy_said:
 	rsync -e "ssh -p $(SSH_PORT)" -P -rvzc --delete-after \

@@ -1,0 +1,22 @@
+Why not topic modeling?
+Because for a person who says so much, he actually says very little
+
+Remaining areas for improvement:
+- Fine tune number of clusters -- there are too many catch-all clusters (3-4)
+
+Idea for visualization:
+- Start with comparison analysis of trump rally speech vs some other similar speech/rally
+  - Find a proper metric for this. Word count vs vocab on such small texts doesn't show much.
+- Yules K/I:
+  - Doesn't provide much more information than what I get with \frac{vocab_{unique}}{N_{words}}
+
+Lets avoid:
+1. spending a ton of time poorly explaining machine learning algorithms:
+ - https://fivethirtyeight.com/features/dissecting-trumps-most-rabid-online-following/
+2. conjecturing without data and analysis:
+ - http://www.politico.com/magazine/story/2015/08/donald-trump-talks-like-a-third-grader-121340
+
+Possible starting points for viz:
+- http://c3js.org/samples/chart_bar_stacked.html
+- http://bl.ocks.org/anupsavvy/9513382
+- https://bl.ocks.org/mbostock/1134768

@@ -1,5 +1,7 @@
 # What Trump Said
 
+[Live demo here](http://bxroberts.org/did_he_say_it_908329810928a/)
+
 This is an interactive tool that allows you to search through hundreds of Donald Trump campaign speeches and locate specific instances, on video, where he said things. We're using YouTube transcripts to build our index, which are of variable quality, so your searches are limited to the accuracy of the transcription.
 
 ## How it works
