@@ -1,6 +1,6 @@
 matplotlib==2.0.0
 numpy==1.22.0
-scipy==0.18.1
+scipy==1.10.0
 scikit-learn==0.18.1
 Jinja2>=2.10.1
 ciso8601==1.0.3
